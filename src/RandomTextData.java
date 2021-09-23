@@ -1,3 +1,5 @@
+import java.io.*;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,12 +8,33 @@ public class RandomTextData {
 
     public static void main(String[] args){
         RandomTextData randomTextData=new RandomTextData();
-        randomTextData.produceRandomText(args);
+        List<String> sentences = randomTextData.produceRandomText(args);
+        if(sentences.size()<1){
+            return;
+        }
+        randomTextData.outputToFiles(sentences);
     }
 
-    public void produceRandomText(String[] args){
+    public void outputToFiles(List<String> datas){
+        String filename="test.txt";
+        try(Writer fileWriter= new FileWriter(filename,false)){
+            try(BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+                for(String word : datas){
+                    bufferedWriter.write(word);
+                    bufferedWriter.newLine();
+                }
+            }
+        } catch (FileNotFoundException e) {
+
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<String> produceRandomText(String[] args){
         if(!isValidArgs(args)){
-            return;
+            return new ArrayList<>();
         }
 
         int lowerBound;
@@ -19,36 +42,45 @@ public class RandomTextData {
         try{
             lowerBound=Integer.parseInt(args[0]);
             upperBound=Integer.parseInt(args[1]);
+            if(lowerBound<=0 || upperBound<=0){
+                throw new InvalidParameterException();
+            }
+
         }
-        catch (NumberFormatException ex){
+        catch (InvalidParameterException ex){
             System.out.println(ex.getStackTrace());
-            return;
+            return new ArrayList<>();
         }
 
         // 입력받은 lowerBound 숫자, upperBound 숫자 사이의 난수 생성
         int randomNum=getRandomNumber(lowerBound,upperBound);
         // 16진수로 출력
-        System.out.println(Integer.toHexString(randomNum));
+//        System.out.println(Integer.toHexString(randomNum));
+        List<String> sentences=new ArrayList<>();
+        sentences.add(Integer.toHexString(randomNum));
 
-        // randomNum 개의 문자열 생성 (각 문자열의 문자들은 공백으로 이어서 한줄로 출력)
-        outputSentences(randomNum);
+        // randomNum 개의 문자열 생성 (각 문자열의 단어들은 공백으로 이어서 한줄로 생성)
+        sentences.addAll(produceSentences(randomNum));
 
-
+        return sentences;
     }
 
-    public void outputSentences(int randomNum){
+    public List<String> produceSentences(int randomNum){
 
         final int wordsLenlow=2;
         final int wordsLenhigh=10;
 
+        List<String> sentences=new ArrayList<>();
+
         // 2이상 10 이하의 임의의 난수 n을 발생시켜(n개의 단어를 규칙을 따라서 입력)
         for(int i=0; i<randomNum; i++){
             // 2이상 10 이하 임의의 난수 n 발생
-            produceSentence(getRandomNumber(wordsLenlow,wordsLenhigh));
+            sentences.add(produceSentence(getRandomNumber(wordsLenlow,wordsLenhigh)));
         }
+        return sentences;
     }
 
-    public void produceSentence(int numOfWords){
+    public String produceSentence(int numOfWords){
         final int wordLengthLow=1;
         final int wordLengthHigh=30;
 
@@ -61,7 +93,7 @@ public class RandomTextData {
             String word=produceWord(getRandomNumber(wordLengthLow,wordLengthHigh));
             randomWords.add(word);
         }
-        System.out.println(randomWords.stream().collect(Collectors.joining(" ")));
+        return randomWords.stream().collect(Collectors.joining(" "));
     }
 
     public String produceWord(int wordLength){
