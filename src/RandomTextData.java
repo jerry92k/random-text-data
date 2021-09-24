@@ -12,11 +12,11 @@ public class RandomTextData {
         if(sentences.size()<1){
             return;
         }
-        randomTextData.outputToFiles(sentences);
+        String filename="test.txt";
+        randomTextData.outputToFiles(sentences,filename);
     }
 
-    public void outputToFiles(List<String> datas){
-        String filename="test.txt";
+    public void outputToFiles(List<String> datas,String filename){
         try(Writer fileWriter= new FileWriter(filename,false)){
             try(BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
                 for(String word : datas){
