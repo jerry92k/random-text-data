@@ -7,11 +7,15 @@ import java.util.stream.Collectors;
 public class RandomTextData {
 
     public static void main(String[] args){
-        RandomTextData randomTextData=new RandomTextData();
-        int numOfSentences= randomTextData.makeRandomNumOfSentences(args);
-        List<String> sentences = randomTextData.produceRandomSentences(numOfSentences);
         String filename="test.txt";
-        randomTextData.outputToFiles(filename,numOfSentences,sentences);
+        RandomTextData randomTextData=new RandomTextData();
+        randomTextData.makeRandomTextFile(args, filename);
+    }
+
+    public void makeRandomTextFile(String[] args, String filename){
+        int numOfSentences= makeRandomNumOfSentences(args);
+        List<String> sentences = produceRandomSentences(numOfSentences);
+        outputToFiles(filename,numOfSentences,sentences);
     }
 
     public int makeRandomNumOfSentences(String[] args){

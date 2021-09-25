@@ -50,24 +50,10 @@ public class TextSummaryStatistics implements StringConsumer {
             // 전체 글자 수 업데이트
             totalLetters+= lengthOfWord;
 
-            //가장 긴 단어 계산 (길이가 같은경우에는 먼저 나온 단어를 가장 긴 단어로 함)
-            if(lengthOfWord>maxWordLen){
-                longgestWords.clear();
-                longgestWords.add(word);
-                maxWordLen=lengthOfWord;
-            }
-            else if(lengthOfWord==maxWordLen) {
-                longgestWords.add(word);
-            }
+            //가장 긴 단어 비교 연산
+            compareLonggestWord(word);
             // 가장 짧은 단어 계산
-            if(shortestWords.equals("") ||  lengthOfWord<minWordLen){
-                shortestWords.clear();
-                shortestWords.add(word);
-                minWordLen=lengthOfWord;
-            }
-            else if(lengthOfWord==minWordLen){
-                shortestWords.add(word);
-            }
+            compareShortestWord(word);
 
             // 글자 도수분포
             for(char ch : word.toCharArray()){
@@ -76,6 +62,28 @@ public class TextSummaryStatistics implements StringConsumer {
 
             //단어 길이 도수분표
             wordLengthFreq.put(lengthOfWord,wordLengthFreq.getOrDefault(lengthOfWord,0)+1);
+        }
+    }
+
+    public void compareLonggestWord(String word){
+        if(word.length()>maxWordLen){
+            longgestWords.clear();
+            longgestWords.add(word);
+            maxWordLen=word.length();
+        }
+        else if(word.length()==maxWordLen) {
+            longgestWords.add(word);
+        }
+    }
+
+    public void compareShortestWord(String word){
+        if(shortestWords.equals("") ||  word.length()<minWordLen){
+            shortestWords.clear();
+            shortestWords.add(word);
+            minWordLen=word.length();
+        }
+        else if(word.length()==minWordLen){
+            shortestWords.add(word);
         }
     }
 
