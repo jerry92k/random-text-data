@@ -1,3 +1,5 @@
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -15,21 +17,15 @@ public class TextCollectorImpl<T, A, R> implements Collector<T, A, R> {
 
     TextCollectorImpl(Supplier<A> supplier,
                   BiConsumer<A, T> accumulator,
-                  BinaryOperator<A> combiner,
-                  Function<A,R> finisher,
-                  Set<Characteristics> characteristics) {
+                  BinaryOperator<A> combiner){
         this.supplier = supplier;
         this.accumulator = accumulator;
         this.combiner = combiner;
-        this.finisher = finisher;
-        this.characteristics = characteristics;
-    }
-
-    TextCollectorImpl(Supplier<A> supplier,
-                  BiConsumer<A, T> accumulator,
-                  BinaryOperator<A> combiner,
-                  Set<Characteristics> characteristics) {
-        this(supplier, accumulator, combiner, castingIdentity(), characteristics);
+        this.finisher = castingIdentity();
+        this.characteristics = Collections.unmodifiableSet(EnumSet.of(
+                Collector.Characteristics.CONCURRENT,
+                Collector.Characteristics.IDENTITY_FINISH
+        ));
     }
 
     @Override
@@ -57,7 +53,7 @@ public class TextCollectorImpl<T, A, R> implements Collector<T, A, R> {
             return characteristics;
         }
 
-    private static <I, R> Function<I, R> castingIdentity() {
+    private <I, R> Function<I, R> castingIdentity() {
         return i -> (R) i;
     }
 }

@@ -8,64 +8,37 @@ public class RandomTextData {
 
     public static void main(String[] args){
         RandomTextData randomTextData=new RandomTextData();
-        List<String> sentences = randomTextData.produceRandomText(args);
-        if(sentences.size()<1){
-            return;
-        }
+        int numOfSentences= randomTextData.makeRandomNumOfSentences(args);
+        List<String> sentences = randomTextData.produceRandomSentences(numOfSentences);
         String filename="test.txt";
-        randomTextData.outputToFiles(sentences,filename);
+        randomTextData.outputToFiles(filename,numOfSentences,sentences);
     }
 
-    public void outputToFiles(List<String> datas,String filename){
-        try(Writer fileWriter= new FileWriter(filename,false)){
-            try(BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-                for(String word : datas){
-                    bufferedWriter.write(word);
-                    bufferedWriter.newLine();
-                }
-            }
-        } catch (FileNotFoundException e) {
-
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public List<String> produceRandomText(String[] args){
-        if(!isValidArgs(args)){
-            return new ArrayList<>();
-        }
-
-        int lowerBound;
-        int upperBound;
-        try{
-            lowerBound=Integer.parseInt(args[0]);
-            upperBound=Integer.parseInt(args[1]);
-            if(lowerBound<=0 || upperBound<=0){
-                throw new InvalidParameterException();
-            }
-
-        }
-        catch (InvalidParameterException ex){
-            System.out.println(ex.getStackTrace());
-            return new ArrayList<>();
-        }
+    public int makeRandomNumOfSentences(String[] args){
+        checkHasArgs(args);
+        int lowerBound=Integer.parseInt(args[0]);
+        int upperBound=Integer.parseInt(args[1]);
+        checkIsPositiveArgs(lowerBound,upperBound);
 
         // 입력받은 lowerBound 숫자, upperBound 숫자 사이의 난수 생성
-        int randomNum=getRandomNumber(lowerBound,upperBound);
-        // 16진수로 출력
-//        System.out.println(Integer.toHexString(randomNum));
-        List<String> sentences=new ArrayList<>();
-        sentences.add(Integer.toHexString(randomNum));
-
-        // randomNum 개의 문자열 생성 (각 문자열의 단어들은 공백으로 이어서 한줄로 생성)
-        sentences.addAll(produceSentences(randomNum));
-
-        return sentences;
+       return getRandomNumber(lowerBound,upperBound);
     }
 
-    public List<String> produceSentences(int randomNum){
+    public void checkHasArgs(String[] args){
+        if(args==null || args.length<2){
+            throw new InvalidParameterException();
+        }
+    }
+
+    public void checkIsPositiveArgs(int... args){
+        for(int num: args){
+            if(num<=0){
+                throw new InvalidParameterException();
+            }
+        }
+    }
+
+    public List<String> produceRandomSentences(int randomNum){
 
         final int wordsLenlow=2;
         final int wordsLenhigh=10;
@@ -78,6 +51,10 @@ public class RandomTextData {
             sentences.add(produceSentence(getRandomNumber(wordsLenlow,wordsLenhigh)));
         }
         return sentences;
+    }
+
+    public int getRandomNumber(int lowerBound, int upperBound){
+        return (int)((Math.random()*(upperBound-lowerBound))+lowerBound);
     }
 
     public String produceSentence(int numOfWords){
@@ -107,10 +84,6 @@ public class RandomTextData {
         return sb.toString();
     }
 
-    public int getRandomNumber(int lowerBound, int upperBound){
-        return (int)((Math.random()*(upperBound-lowerBound))+lowerBound);
-    }
-
     public int getRandomAlphabet() {
         final int aciAlphabetLower=65; // A
         final int aciAlphabetUpper=121; // z
@@ -123,10 +96,21 @@ public class RandomTextData {
         return num;
     }
 
-    public boolean isValidArgs(String[] args){
-        if(args==null || args.length<2){
-            return false;
+    public void outputToFiles(String filename, int numOfSentences, List<String> sentences){
+        try(Writer fileWriter= new FileWriter(filename,false)){
+            try(BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+                bufferedWriter.write(String.valueOf(numOfSentences));
+                for(String word : sentences){
+                    bufferedWriter.newLine();
+                    bufferedWriter.write(word);
+                }
+            }
+        } catch (FileNotFoundException e) {
+
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return true;
     }
+
 }
