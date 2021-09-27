@@ -18,7 +18,7 @@ public class RandomTextData {
         outputToFiles(filename,numOfSentences,sentences);
     }
 
-    public int makeRandomNumOfSentences(String[] args){
+    private int makeRandomNumOfSentences(String[] args){
         checkHasArgs(args);
         int lowerBound=Integer.parseInt(args[0]);
         int upperBound=Integer.parseInt(args[1]);
@@ -28,13 +28,13 @@ public class RandomTextData {
        return getRandomNumber(lowerBound,upperBound);
     }
 
-    public void checkHasArgs(String[] args){
+    private void checkHasArgs(String[] args){
         if(args==null || args.length<2){
             throw new InvalidParameterException();
         }
     }
 
-    public void checkIsPositiveArgs(int... args){
+    private void checkIsPositiveArgs(int... args){
         for(int num: args){
             if(num<=0){
                 throw new InvalidParameterException();
